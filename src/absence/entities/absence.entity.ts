@@ -4,7 +4,6 @@ import mongoose, { Date, ObjectId } from "mongoose";
 import { Subject as SubjectModel } from "src/subject/entities/subject.entity";
 import { Proof as ProofModel } from "src/proof/entities/proof.entity";
 import { User as UserModel } from "src/user/entities/user.entity";
-import { IsoDatePipe } from "../pipes/iso-date.pipe";
 
 @Schema()
 export class Absence {

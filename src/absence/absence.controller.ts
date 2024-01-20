@@ -8,8 +8,6 @@ export class AbsenceController {
 
   @Post()
   create(@Body() createAbsenceDto: CreateAbsenceDto) {
-    console.log('createAbsenceDto: ', createAbsenceDto);
-
     return this.absenceService.create(createAbsenceDto);
   }
 
