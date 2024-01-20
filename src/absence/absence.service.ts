@@ -138,26 +138,9 @@ export class AbsenceService {
       }
 
       // PASAR ESTO A UNA FUNCIÓN APARTE --- INICIO ---
-      const foundAbsence = await this.absenceModel.findById(id);
-      if(
-        proof && subject && user &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, proof, subject, user) ||
-        proof && subject &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, proof, subject, foundAbsence.user) ||
-        proof && user &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, proof, foundAbsence.subject, user) ||
-        subject && user &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, subject, user) ||
-        proof &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, proof, foundAbsence.subject, foundAbsence.user) ||
-        subject &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, subject, foundAbsence.user) ||
-        user &&
-        await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, foundAbsence.subject, user)
-        ) {
-          throw new BadRequestException('Está falta ya existe');
-        }
-        // PASAR ESTO A UNA FUNCIÓN APARTE --- FIN ---
+      if(await this.isAbsenceCreatedWhenUpdating(id, proof, subject, user)) {
+        throw new BadRequestException('Está falta ya existe');
+      }
 
       const updatedAbsence = await this.absenceModel.findByIdAndUpdate(id, updateAbsenceDto, {
         new: true,
@@ -229,5 +212,72 @@ export class AbsenceService {
     } catch (error) {
       return error.response;
     }
+  }
+
+  private async isAbsenceCreatedWhenUpdating(absenceId : string, proof : ObjectId, subject : ObjectId, user : ObjectId) : Promise<Boolean> {
+    const foreignKeyGiven = [proof, subject, user];
+    const foundAbsence = await this.absenceModel.findById(absenceId);
+
+    switch(foreignKeyGiven.filter((value) => value).length) {
+      case 3:
+        if(
+          proof && subject && user &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, subject, user)
+        ) {
+          return true;
+        }
+      break;
+
+      case 2:
+        if(
+          proof && subject &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, subject, foundAbsence.user)
+        ) {
+          return true;
+        }
+
+        if(
+          proof && user &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, foundAbsence.subject, user)
+        ) {
+          return true;
+        }
+
+        if(
+          subject && user &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, subject, user)
+        ) {
+          return true
+        }
+      break;
+
+      case 1:
+        if(
+          proof &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, foundAbsence.subject, foundAbsence.user)
+        ) {
+          return true;
+        }
+
+        if(
+          subject &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, subject, foundAbsence.user)
+        ) {
+          return true;
+        }
+
+        if(
+          user &&
+          await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, foundAbsence.subject, user)
+        ) {
+          return true;
+        }
+      break;
+
+      default:
+        false;
+    }
+    
+    return false;
   }
 }
