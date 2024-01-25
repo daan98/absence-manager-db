@@ -99,7 +99,7 @@ export class UserService {
 
   async findAll() {
     try {
-      const foundUser = await this.userModel.find();
+      const foundUser : User[] = await this.userModel.find().select('-password');
 
       if(foundUser.length > 0) {
         return foundUser;
@@ -113,7 +113,7 @@ export class UserService {
 
   async findOne(id: string) {
     try {
-      const user = await this.userModel.findById(id);
+      const user = await this.userModel.findById(id).select('-password');
 
       const { password, ...rest } = user.toJSON();
 
@@ -125,10 +125,10 @@ export class UserService {
 
   async findSuggestedUser(queryName : string, limit : string) {
     try {
-      const nameRegex = new RegExp(`${queryName}`, 'i');
-      const foundUser = await this.userModel.find({ name: { $regex: nameRegex }}, undefined, {
+      const nameRegex          = new RegExp(`${queryName}`, 'i');
+      const foundUser : User[] = await this.userModel.find({ name: { $regex: nameRegex }}, undefined, {
         limit: +limit
-      });
+      }).select('-password');
 
       if(foundUser.length > 0) {
         return foundUser;
@@ -147,13 +147,27 @@ export class UserService {
         throw new BadRequestException("Rol no valido.");
       }
 
-      const foundUser = await this.userModel.find({ role: { $regex: roleRegex }});
+      const foundUser : User[] = await this.userModel.find({ role: { $regex: roleRegex }}).select('-password');
 
       if(foundUser.length > 0) {
         return foundUser;
       }
 
       throw new Error('No hay usuarios con este ');
+    } catch (error) {
+      return error.response;
+    }
+  }
+
+  async findByDni(dni : number) {
+    try {
+      const foundUser : User[] = await this.userModel.find({ dni }).select('-password');
+
+      if(foundUser.length > 0 && foundUser[0].role === RoleEnum.admin) {
+        return foundUser;
+      }
+
+      throw new BadRequestException('No hay usuarios con este dni');
     } catch (error) {
       return error.response;
     }
