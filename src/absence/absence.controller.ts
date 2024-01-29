@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AbsenceService } from './absence.service';
 import { CreateAbsenceDto, GetAbsenceDateDto, UpdateAbsenceDto } from './dto';
 
@@ -17,8 +17,9 @@ export class AbsenceController {
   }
 
   @Get('absence-date')
-  findeByDate(@Body() getAbsenceDateDto : GetAbsenceDateDto) {
-    return this.absenceService.findByDate(getAbsenceDateDto);
+  findeByDate(@Query() q) {// @Body() getAbsenceDateDto : GetAbsenceDateDto
+    const { absenceDate } = q;
+    return this.absenceService.findByDate(absenceDate);
   }
 
   @Get()

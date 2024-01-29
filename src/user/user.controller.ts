@@ -47,9 +47,9 @@ export class UserController {
 
   @Get('/dni')
   getUserDni(@Query() query) {
-    const { dni } = query;
+    const { dni, role } = query;
 
-    return this.userService.findByDni(dni);
+    return this.userService.findByDni(dni, role);
   }
 
   @UseGuards(AuthGuard)

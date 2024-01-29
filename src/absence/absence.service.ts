@@ -83,7 +83,7 @@ export class AbsenceService {
 
   async findOne(id: string) {
     try {
-      const foundAbsence = await this.absenceModel.findById(id);
+      const foundAbsence = await this.absenceModel.findById(id).populate(['proof', 'subject', 'user']).exec();
 
       if(foundAbsence) {
         return foundAbsence;
@@ -99,7 +99,7 @@ export class AbsenceService {
     try {
       const extraInfo = await this.absenceModel.find().populate(['proof', 'subject', 'user']).exec();
 
-      if(extraInfo) {
+      if(extraInfo.length > 0) {
         return extraInfo
       }
 
@@ -109,9 +109,9 @@ export class AbsenceService {
     }
   }
 
-  async findByDate(getAbsenceDateDto : GetAbsenceDateDto) {
+  async findByDate(absenceDate) {
     try {
-      const foundAbsence = await this.absenceModel.find({ absenceDate: getAbsenceDateDto.absenceDate  });
+      const foundAbsence = await this.absenceModel.find({ absenceDate  }).populate(['proof', 'subject', 'user']).exec();
 
       if(foundAbsence.length > 0) {
          return foundAbsence;

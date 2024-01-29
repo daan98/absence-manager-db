@@ -69,10 +69,12 @@ export class SubjectService {
     }
   }
 
-  async finByName(name : string) {
+  async finByName(name : string, limit : number) {
     try {
       const nameRegex = new RegExp(`${name}`, 'i');
-      const foundSubject = await this.subjectModel.find({subjectName: { $regex: nameRegex}});
+      const foundSubject = await this.subjectModel.find({subjectName: { $regex: nameRegex}}, undefined,  {
+        limit
+      });
 
       if(foundSubject.length > 0) {
         return foundSubject;

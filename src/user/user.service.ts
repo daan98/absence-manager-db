@@ -126,7 +126,7 @@ export class UserService {
   async findSuggestedUser(queryName : string, limit : string) {
     try {
       const nameRegex          = new RegExp(`${queryName}`, 'i');
-      const foundUser : User[] = await this.userModel.find({ name: { $regex: nameRegex }}, undefined, {
+      const foundUser : User[] = await this.userModel.find({ name: { $regex: nameRegex } }, undefined, {
         limit: +limit
       }).select('-password');
 
@@ -159,11 +159,16 @@ export class UserService {
     }
   }
 
-  async findByDni(dni : number) {
+  async findByDni(dni : number, role ?: string) {
     try {
       const foundUser : User[] = await this.userModel.find({ dni }).select('-password');
 
-      if(foundUser.length > 0 && foundUser[0].role === RoleEnum.admin) {
+      console.log('foundUser: ', foundUser);
+      if(role === 'administrador') {
+        return foundUser;
+      }
+
+      if(foundUser.length > 0 && foundUser[0].role !== RoleEnum.admin) {
         return foundUser;
       }
 

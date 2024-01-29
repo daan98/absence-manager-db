@@ -14,9 +14,9 @@ export class SubjectController {
 
   @Get('/subjectName')
   findSubjectName(@Query() query) {
-    const { name } = query;
+    const { name, limit } = query;
 
-    return this.subjectService.finByName(name);
+    return this.subjectService.finByName(name, limit);
   }
 
   @Get()
