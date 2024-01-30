@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 
-import { CreateUserDto, ForgotPasswordDto, LoginUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto, ForgotPasswordDto, LoginUserDto, UpdateUserDto, UpdateUserPasswordDto } from './dto';
 import { UserService } from './user.service';
 import LoginResponseInterface from './interface/login-response.interface';
 import { User } from './entities/user.entity';
@@ -64,10 +64,14 @@ export class UserController {
   }
 
 
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
+  }
+
+  @Patch('change-password/:id')
+  updatePassword(@Param('id') id : string, @Body() updateUserPasswordDto : UpdateUserPasswordDto) {
+    return this.userService.changePassword(id, updateUserPasswordDto);
   }
 
   @Delete(':id')

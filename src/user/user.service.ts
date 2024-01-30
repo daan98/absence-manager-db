@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import * as bcryptjs from "bcryptjs";
 
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto, LoginUserDto, UpdateUserDto, UpdateUserPasswordDto } from './dto';
 import { User } from './entities/user.entity';
 import JwtPayload from './interface/jwt-payload.interface';
 import { LoginResponseInterface, RoleEnum } from './interface';
@@ -163,7 +163,6 @@ export class UserService {
     try {
       const foundUser : User[] = await this.userModel.find({ dni }).select('-password');
 
-      console.log('foundUser: ', foundUser);
       if(role === 'administrador') {
         return foundUser;
       }
@@ -204,6 +203,22 @@ export class UserService {
       });
       
       return updatedUser;
+    } catch (error) {
+      return error.response;
+    }
+  }
+
+  async changePassword(id : string, updateUserPasswordDto : UpdateUserPasswordDto) {
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(id, {password: bcryptjs.hashSync(updateUserPasswordDto.password, 10)}, {
+        new: true
+      });
+
+      await updatedUser.save();
+
+      const { password, ...user } = updatedUser.toJSON();
+
+      return user;
     } catch (error) {
       return error.response;
     }
