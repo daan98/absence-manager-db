@@ -17,6 +17,7 @@ import { UserService } from 'src/user/user.service';
 export class AbsenceService {
 
   private foundProof       : ProofInterface | null = null;
+  private foundAbsence     : Absence | null        = null;
 
   constructor(
     @InjectModel(Absence.name)
@@ -137,14 +138,15 @@ export class AbsenceService {
         throw new BadRequestException('Por favor. para esta justificación escriba una descripción de la falta.');
       }
 
-      // PASAR ESTO A UNA FUNCIÓN APARTE --- INICIO ---
-      if(await this.isAbsenceCreatedWhenUpdating(id, proof, subject, user)) {
+      if(await this.isAbsenceCreatedWhenUpdating(id, proof, subject, user) && this.foundAbsence.absenceDescription === updateAbsenceDto?.absenceDate) {
         throw new BadRequestException('Está falta ya existe');
       }
 
       const updatedAbsence = await this.absenceModel.findByIdAndUpdate(id, updateAbsenceDto, {
         new: true,
       });
+
+      updatedAbsence.save();
 
       return updatedAbsence;
     } catch (error) {
@@ -216,13 +218,13 @@ export class AbsenceService {
 
   private async isAbsenceCreatedWhenUpdating(absenceId : string, proof : ObjectId, subject : ObjectId, user : ObjectId) : Promise<Boolean> {
     const foreignKeyGiven = [proof, subject, user];
-    const foundAbsence = await this.absenceModel.findById(absenceId);
+    this.foundAbsence = await this.absenceModel.findById(absenceId);
 
     switch(foreignKeyGiven.filter((value) => value).length) {
       case 3:
         if(
           proof && subject && user &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, subject, user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, proof, subject, user)
         ) {
           return true;
         }
@@ -231,21 +233,21 @@ export class AbsenceService {
       case 2:
         if(
           proof && subject &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, subject, foundAbsence.user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, proof, subject, this.foundAbsence.user)
         ) {
           return true;
         }
 
         if(
           proof && user &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, foundAbsence.subject, user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, proof, this.foundAbsence.subject, user)
         ) {
           return true;
         }
 
         if(
           subject && user &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, subject, user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, this.foundAbsence.proof, subject, user)
         ) {
           return true
         }
@@ -254,21 +256,21 @@ export class AbsenceService {
       case 1:
         if(
           proof &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, proof, foundAbsence.subject, foundAbsence.user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, proof, this.foundAbsence.subject, this.foundAbsence.user)
         ) {
           return true;
         }
 
         if(
           subject &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, subject, foundAbsence.user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, this.foundAbsence.proof, subject, this.foundAbsence.user)
         ) {
           return true;
         }
 
         if(
           user &&
-          await this.isAbsenceCreated(foundAbsence.absenceDate, foundAbsence.proof, foundAbsence.subject, user)
+          await this.isAbsenceCreated(this.foundAbsence.absenceDate, this.foundAbsence.proof, this.foundAbsence.subject, user)
         ) {
           return true;
         }

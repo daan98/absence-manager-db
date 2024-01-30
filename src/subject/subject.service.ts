@@ -21,9 +21,9 @@ export class SubjectService {
       }
 
       const nameRegex = new RegExp(`${createSubjectDto.subjectName}`, 'i');
-      const foundSubject = await this.subjectModel.find({ subjectName: { $regex: nameRegex }});
-
-      if(foundSubject.length > 0) {
+      const foundSubject = await this.subjectModel.find({ subjectName: { $regex: nameRegex}});
+      
+      if(foundSubject.length > 0 && foundSubject[0].subjectName.toLowerCase()  === createSubjectDto.subjectName.toLowerCase()) {
         throw new BadRequestException('Esta materia ya ha sido creada.');
       }
 
@@ -97,11 +97,12 @@ export class SubjectService {
       if(!foundSubjectId) {
         throw new BadRequestException('Esta materia ha sido eliminada');
       }
-
+      
       const nameRegex = new RegExp(`${updateSubjectDto.subjectName}`, 'i');
       const foundSubject = await this.subjectModel.find({ subjectName: { $regex: nameRegex }});
-
-      if(foundSubject.length > 0) {
+      
+      // para evitar que se generen materías repetidas
+      if(foundSubject.length > 0 && foundSubject[0].subjectName.toLowerCase()  === updateSubjectDto.subjectName.toLowerCase()) {
         throw new BadRequestException('Esta materia ya ha sido creada.');
       }
 
