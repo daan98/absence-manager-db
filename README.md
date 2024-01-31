@@ -24,50 +24,37 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Bienvenido al backend del administrador de faltas. Para tener funcionando el backend (los datos de la aplicación) es necesario tener instalado la aplicación [docker desktop](https://docs.docker.com/desktop/) en tu computadora. De igual forma se usa mongoDB como base de datos, en el archivo `.env.template` conseguiràs los nombres de las variables de entorno necesarias para crear usuarios, materias, justificaciones y faltas al igual que manipular la informaciòn que hayas creado.
 
-## Installation
+## Instalaciones
+
+Para instalar paquetes necesarios para el backend corre el comando:
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+Una vez que tengas docker instalado y ejecutandose en tu computadora, por favor corre el siguiente comando:
 
 ```bash
-# development
-$ npm run start
+$ docker compose up -d
+```
 
+## Para correr la aplicación en local
+
+Te recomiendo correr el comando:
+
+```bash
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+## Licencia
 
-```bash
-# unit tests
-$ npm run test
+Nest esta [licenciado por MIT](LICENSE).
 
-# e2e tests
-$ npm run test:e2e
+## NOTAS
 
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Todos los comandos deben correrse en la consola una vez que estes ubicado en la carpeta del proyecto.
+- Si quieres correr la parte visual del administrador de faltas has click [aquí](https://github.com/daan98/absence-manager-front) y sigue los pasos que se especifican en el archivo README.md. Las faltas se pueden crear, visualizar y actualizar al correr este proyecto (absence-manager-front).
+- Se recomienda el uso de **postman** para crear usuarios, materias y justificaciones. En caso de no tenerlo instalado en tu computadora haz click [aquí](https://www.postman.com/downloads/)
